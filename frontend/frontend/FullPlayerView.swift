@@ -58,25 +58,40 @@ struct FullPlayerView: View {
             .padding(.horizontal, 30)
             
             // 4. Controls
-            HStack(spacing: 40) {
+            HStack(spacing: 20) { // Tightened spacing to fit 5 buttons
+                
+                // Shuffle
                 Button {
-                    viewModel.playPrevious()
+                    viewModel.toggleShuffle()
                 } label: {
-                    Image(systemName: "backward.fill").font(.system(size: 30))
+                    Image(systemName: "shuffle")
+                        .foregroundColor(viewModel.shuffleMode ? .blue : .gray)
+                        .font(.title2)
+                }
+                
+                Button { viewModel.playPrevious() } label: {
+                    Image(systemName: "backward.fill").font(.title)
                 }
                 
                 Button {
                     audioManager.togglePlayPause()
                 } label: {
                     Image(systemName: audioManager.isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                        .font(.system(size: 70))
+                        .font(.system(size: 60))
                         .foregroundColor(.blue)
                 }
                 
+                Button { viewModel.playNext() } label: {
+                    Image(systemName: "forward.fill").font(.title)
+                }
+                
+                // Repeat
                 Button {
-                    viewModel.playNext()
+                    viewModel.toggleRepeat()
                 } label: {
-                    Image(systemName: "forward.fill").font(.system(size: 30))
+                    Image(systemName: viewModel.repeatMode == .one ? "repeat.1" : "repeat")
+                        .foregroundColor(viewModel.repeatMode != .none ? .blue : .gray)
+                        .font(.title2)
                 }
             }
             .foregroundColor(.primary)
