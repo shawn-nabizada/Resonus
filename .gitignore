@@ -1,10 +1,54 @@
-# Python-generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+# --- General / OS ---
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+Thumbs.db
+Desktop.ini
 
-# Virtual environments
-.venv
+# --- Python Backend (backend/) ---
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments (uv creates .venv)
+.venv/
+venv/
+ENV/
+env/
+
+# Environment Variables (Security)
+.env
+.env.local
+
+# Temporary Downloads (Crucial for your specific setup)
+backend/downloads/
+downloads/
+
+# Logs
+*.log
+
+# --- iOS / Xcode (frontend/) ---
+# Build generated
+build/
+DerivedData/
+
+# User-specific Xcode data (Don't commit these!)
+*.osactivitylog
+*.xcuserstate
+*.xccheckout
+xcuserdata/
+*.mode1v3
+*.mode2v3
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+
+# Swift Package Manager
+.swiftpm/xcode/
+.build/
+
+# --- Docker ---
+.docker/
