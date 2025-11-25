@@ -1,8 +1,10 @@
 # Use a lightweight Python Linux image
 FROM python:3.11-slim-bookworm
 
-# 1. Install FFmpeg (Crucial for yt-dlp audio conversion)
-RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+# 1. Install FFmpeg AND Node.js
+RUN apt-get update && \
+    apt-get install -y ffmpeg nodejs && \
+    rm -rf /var/lib/apt/lists/*
 
 # 2. Install 'uv' package manager
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
@@ -12,10 +14,11 @@ WORKDIR /app
 # 3. Copy project dependency files
 COPY pyproject.toml uv.lock ./
 
-# 4. Install dependencies (creates a virtual environment inside the container)
+# 4. Install dependencies
 RUN uv sync --frozen --no-install-project
 
-# 5. Copy your actual application code
+# 5. Copy app code
+COPY static ./static
 COPY main.py .
 
 # 6. Expose port 8000

@@ -23,15 +23,38 @@ def cleanup_file(path: str):
     except Exception as e:
         print(f"Error deleting file: {e}")
 
+@app.get("/")
+async def read_root():
+    return FileResponse('static/index.html')
+
 @app.post("/convert")
 async def convert_video(request: VideoRequest):
     file_id = str(uuid.uuid4())
+    
+    # UPDATED OPTIONS FOR RENDER DEPLOYMENT
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': f'{DOWNLOAD_DIR}/{file_id}.%(ext)s',
-        'postprocessors': [{'key': 'FFmpegExtractAudio','preferredcodec': 'mp3','preferredquality': '192'}],
+        'writethumbnail': True,
+        'postprocessors': [
+            {'key': 'FFmpegExtractAudio','preferredcodec': 'mp3','preferredquality': '192'},
+            {'key': 'EmbedThumbnail'},
+        ],
         'quiet': True,
-        'noplaylist': True
+        'noplaylist': True,
+        
+        # --- NEW SETTINGS TO BYPASS "SIGN IN" ERROR ---
+        # 1. Force IPv4 (YouTube blocks many datacenter IPv6 addresses)
+        'source_address': '0.0.0.0', 
+        
+        # 2. Pretend to be an Android client (less strict bot checks)
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['android', 'web'],
+                'player_skip': ['js', 'configs', 'webpage'], 
+            }
+        },
+        # ---------------------------------------------
     }
 
     try:
