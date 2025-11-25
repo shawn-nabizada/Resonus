@@ -12,91 +12,113 @@ struct FullPlayerView: View {
     }
     
     var body: some View {
-        VStack(spacing: 30) {
-            // 1. Artwork Placeholder
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.gray.opacity(0.3))
-                .frame(width: 250, height: 250)
-                .overlay(
-                    Image(systemName: "music.note")
+        ZStack {
+            // 1. Dynamic Blurred Background
+            if let current = viewModel.currentSong,
+               let artName = current.localArtworkName,
+               let artURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(artName).path as String?,
+               let image = UIImage(contentsOfFile: artURL) {
+                
+                GeometryReader { proxy in
+                    Image(uiImage: image)
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 100)
-                        .foregroundColor(.gray)
-                )
-                .shadow(radius: 10)
-                .padding(.top, 40)
-            
-            // 2. Song Info
-            VStack(spacing: 8) {
-                Text(viewModel.currentSong?.title ?? "Not Playing")
-                    .font(.title2).bold()
-                    .multilineTextAlignment(.center)
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                        .blur(radius: 50)
+                        .overlay(Color.black.opacity(0.3))
+                }
+                .edgesIgnoringSafeArea(.all)
+            } else {
+                // Fallback Gradient
+                LinearGradient(colors: [.gray.opacity(0.3), .black], startPoint: .top, endPoint: .bottom)
+                    .edgesIgnoringSafeArea(.all)
+            }
+            VStack(spacing: 30) {
+                // 1. Artwork Placeholder
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(width: 250, height: 250)
+                    .overlay(
+                        Image(systemName: "music.note")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 100)
+                            .foregroundColor(.gray)
+                    )
+                    .shadow(radius: 10)
+                    .padding(.top, 40)
                 
-                Text(viewModel.currentSong?.artist ?? "Unknown Artist")
-                    .font(.headline)
+                // 2. Song Info
+                VStack(spacing: 8) {
+                    Text(viewModel.currentSong?.title ?? "Not Playing")
+                        .font(.title2).bold()
+                        .multilineTextAlignment(.center)
+                    
+                    Text(viewModel.currentSong?.artist ?? "Unknown Artist")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                // 3. Scrubber / Slider
+                VStack(spacing: 5) {
+                    Slider(value: Binding(
+                        get: { audioManager.currentTime },
+                        set: { newValue in audioManager.seek(to: newValue) }
+                    ), in: 0...audioManager.duration)
+                    
+                    HStack {
+                        Text(formatTime(audioManager.currentTime))
+                        Spacer()
+                        Text(formatTime(audioManager.duration))
+                    }
+                    .font(.caption)
                     .foregroundColor(.secondary)
+                }
+                .padding(.horizontal, 30)
+                
+                // 4. Controls
+                HStack(spacing: 20) {
+                    
+                    // Shuffle
+                    Button {
+                        viewModel.toggleShuffle()
+                    } label: {
+                        Image(systemName: "shuffle")
+                            .foregroundColor(viewModel.shuffleMode ? .blue : .gray)
+                            .font(.title2)
+                    }
+                    
+                    Button { viewModel.playPrevious() } label: {
+                        Image(systemName: "backward.fill").font(.title)
+                    }
+                    
+                    Button {
+                        audioManager.togglePlayPause()
+                    } label: {
+                        Image(systemName: audioManager.isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                            .font(.system(size: 60))
+                            .foregroundColor(.blue)
+                    }
+                    
+                    Button { viewModel.playNext() } label: {
+                        Image(systemName: "forward.fill").font(.title)
+                    }
+                    
+                    // Repeat
+                    Button {
+                        viewModel.toggleRepeat()
+                    } label: {
+                        Image(systemName: viewModel.repeatMode == .one ? "repeat.1" : "repeat")
+                            .foregroundColor(viewModel.repeatMode != .none ? .blue : .gray)
+                            .font(.title2)
+                    }
+                }
+                .foregroundColor(.primary)
+                .padding(.bottom, 50)
             }
-            
-            Spacer()
-            
-            // 3. Scrubber / Slider
-            VStack(spacing: 5) {
-                Slider(value: Binding(
-                    get: { audioManager.currentTime },
-                    set: { newValue in audioManager.seek(to: newValue) }
-                ), in: 0...audioManager.duration)
-                
-                HStack {
-                    Text(formatTime(audioManager.currentTime))
-                    Spacer()
-                    Text(formatTime(audioManager.duration))
-                }
-                .font(.caption)
-                .foregroundColor(.secondary)
-            }
-            .padding(.horizontal, 30)
-            
-            // 4. Controls
-            HStack(spacing: 20) { // Tightened spacing to fit 5 buttons
-                
-                // Shuffle
-                Button {
-                    viewModel.toggleShuffle()
-                } label: {
-                    Image(systemName: "shuffle")
-                        .foregroundColor(viewModel.shuffleMode ? .blue : .gray)
-                        .font(.title2)
-                }
-                
-                Button { viewModel.playPrevious() } label: {
-                    Image(systemName: "backward.fill").font(.title)
-                }
-                
-                Button {
-                    audioManager.togglePlayPause()
-                } label: {
-                    Image(systemName: audioManager.isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                        .font(.system(size: 60))
-                        .foregroundColor(.blue)
-                }
-                
-                Button { viewModel.playNext() } label: {
-                    Image(systemName: "forward.fill").font(.title)
-                }
-                
-                // Repeat
-                Button {
-                    viewModel.toggleRepeat()
-                } label: {
-                    Image(systemName: viewModel.repeatMode == .one ? "repeat.1" : "repeat")
-                        .foregroundColor(viewModel.repeatMode != .none ? .blue : .gray)
-                        .font(.title2)
-                }
-            }
-            .foregroundColor(.primary)
-            .padding(.bottom, 50)
+            .padding()
         }
-        .padding()
     }
 }

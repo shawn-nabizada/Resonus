@@ -16,7 +16,7 @@ struct EditSongView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section(header: Text("Metadata")) {
                     TextField("Title", text: $title)
@@ -25,9 +25,16 @@ struct EditSongView: View {
             }
             .navigationTitle("Edit Song")
             .toolbar {
-                Button("Save") {
-                    viewModel.updateSongMetadata(song: song, newTitle: title, newArtist: artist)
-                    dismiss()
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        viewModel.updateSongMetadata(song: song, newTitle: title, newArtist: artist)
+                        dismiss()
+                    }
                 }
             }
         }

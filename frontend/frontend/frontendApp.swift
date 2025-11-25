@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct frontendApp: App {
@@ -13,5 +14,6 @@ struct frontendApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: [Song.self, Playlist.self])
     }
 }

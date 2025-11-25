@@ -49,9 +49,10 @@ class AudioManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     }
     
     func seek(to time: TimeInterval) {
-        player?.currentTime = time
-        updateNowPlayingInfo() // Update time on lock screen
-    }
+            player?.currentTime = time
+            self.currentTime = time
+            updateNowPlayingInfo()
+        }
     
     // MARK: - Background & Lock Screen
     private func setupAudioSession() {
