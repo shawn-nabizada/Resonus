@@ -22,6 +22,7 @@ env/
 # Environment Variables (Security)
 .env
 .env.local
+cookies.txt
 
 # Temporary Downloads (Crucial for your specific setup)
 backend/downloads/

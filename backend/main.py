@@ -31,7 +31,7 @@ async def read_root():
 async def convert_video(request: VideoRequest):
     file_id = str(uuid.uuid4())
     
-    # UPDATED OPTIONS FOR RENDER DEPLOYMENT
+    # UPDATED OPTIONS WITH COOKIES
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': f'{DOWNLOAD_DIR}/{file_id}.%(ext)s',
@@ -43,18 +43,11 @@ async def convert_video(request: VideoRequest):
         'quiet': True,
         'noplaylist': True,
         
-        # --- NEW SETTINGS TO BYPASS "SIGN IN" ERROR ---
-        # 1. Force IPv4 (YouTube blocks many datacenter IPv6 addresses)
-        'source_address': '0.0.0.0', 
+        # 1. Use the cookies file to bypass "Sign in" errors
+        'cookiefile': 'cookies.txt', 
         
-        # 2. Pretend to be an Android client (less strict bot checks)
-        'extractor_args': {
-            'youtube': {
-                'player_client': ['android', 'web'],
-                'player_skip': ['js', 'configs', 'webpage'], 
-            }
-        },
-        # ---------------------------------------------
+        # 2. Force IPv4
+        'source_address': '0.0.0.0', 
     }
 
     try:

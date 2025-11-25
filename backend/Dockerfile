@@ -17,12 +17,15 @@ COPY pyproject.toml uv.lock ./
 # 4. Install dependencies
 RUN uv sync --frozen --no-install-project
 
-# 5. Copy app code
+# 5. Copy cookies
+COPY cookies.txt .
+
+# 6. Copy app code
 COPY static ./static
 COPY main.py .
 
-# 6. Expose port 8000
+# 7. Expose port 8000
 EXPOSE 8000
 
-# 7. Start the server
+# 8. Start the server
 CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
