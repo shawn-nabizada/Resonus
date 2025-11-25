@@ -19,7 +19,8 @@ Resonus is a small music app project that includes a backend API and an iOS Swif
 
 ## How to run
 
-The backend is deployed on Render (free tier). Note: Render will spin the service down after a period of inactivity (approximately 15 minutes). When the service is spun down, the next incoming request will cause Render to start the instance again — expect a cold-start delay on the first request after idle. Point the frontend to the deployed base URL (for example `https://your-app.onrender.com`) and replace that placeholder with the actual Render URL for this project.
+The backend is deployed on Render (free tier) at https://resonus-backend.onrender.com/.
+Note: Render will spin the service down after a period of inactivity (approximately 15 minutes). When the service is spun down, the next incoming request will cause Render to start the instance again — expect a cold-start delay on the first request after idle.
 
 ### Run the iOS frontend (Xcode)
 
